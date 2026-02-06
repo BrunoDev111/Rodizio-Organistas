@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rodízio Organistas">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Cinzel:wght@600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=5.0.0">
+    <title>Rodízio Organistas</title>
+</head>
+<body>
+    <!-- Header fixo -->
+    <div class="header">
+        <div class="header-content">
+            <!-- TOGGLE DARK MODE -->
+            <div class="dark-mode-toggle" id="darkModeToggle">
+                <span class="toggle-icon" id="toggleIcon">🌙</span>
+                <span class="toggle-text" id="toggleText">Dark</span>
+            </div>
+            
+            <div class="app-title">🎵 Rodízio Organistas</div>
+            <div class="current-date" id="currentDate"></div>
+        </div>
+        
+        <!-- BOTÃO DE ORGANISTA NO HEADER - ELEMENTO CRÍTICO -->
+        <div class="organist-selector-button" id="organistSelectorButton">
+            🎹 Selecionar Organista
+        </div>
+        
+        <div class="toggle-container">
+            <input type="checkbox" id="highlightToggle" checked>
+            <span>Destacar hoje</span>
+        </div>
+    </div>
+
+    <!-- Seletor de Organista (inicialmente oculto) -->
+    <div class="organist-selector" id="organistSelector" style="display: none;">
+        <h3>🎹 Selecione seu nome para receber notificações</h3>
+        <div class="organist-grid">
+            <div class="organist-option" data-organist="Arlete">
+                <input type="radio" id="arlete" name="selectedOrganist" value="Arlete">
+                <label for="arlete">Arlete</label>
+            </div>
+            <div class="organist-option" data-organist="Adriana">
+                <input type="radio" id="adriana" name="selectedOrganist" value="Adriana">
+                <label for="adriana">Adriana</label>
+            </div>
+            <div class="organist-option" data-organist="Ednice">
+                <input type="radio" id="ednice" name="selectedOrganist" value="Ednice">
+                <label for="ednice">Ednice</label>
+            </div>
+            <div class="organist-option" data-organist="Maeme">
+                <input type="radio" id="maeme" name="selectedOrganist" value="Maeme">
+                <label for="maeme">Maeme</label>
+            </div>
+            <div class="organist-option" data-organist="Helena">
+                <input type="radio" id="helena" name="selectedOrganist" value="Helena">
+                <label for="helena">Helena</label>
+            </div>
+            <div class="organist-option" data-organist="Lavinia">
+                <input type="radio" id="lavinia" name="selectedOrganist" value="Lavinia">
+                <label for="lavinia">Lavinia</label>
+            </div>
+            <div class="organist-option" data-organist="Gabriela">
+                <input type="radio" id="gabriela" name="selectedOrganist" value="Gabriela">
+                <label for="gabriela">Gabriela</label>
+            </div>
+        </div>
+        <div class="notification-status" id="notificationStatus">
+            Selecione seu nome para ativar notificações personalizadas
+        </div>
+        <button class="close-selector-btn" id="closeSelectorBtn">
+            ❌ Fechar
+        </button>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="main-content">
+        <!-- Seção Escala Geral -->
+        <div class="section active" id="escala-geral">
+            <div class="section-title">RODÍZIO ORGANISTAS JARDIM GUARANI<br>JANEIRO A JUNHO 2026</div>
+            
+            <!-- Afinação -->
+            <div class="section-subtitle">🔧 AFINAÇÃO/ENSAIO - PRIMEIRO SÁBADO DO MÊS</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid afinacao-grid" id="afinacaoGridGeral"></div>
+                </div>
+            </div>
+
+            <!-- Rodízio Oficial -->
+            <div class="section-subtitle">🎵 RODÍZIO OFICIAL</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid oficial-grid" id="oficialGridGeral"></div>
+                </div>
+            </div>
+
+            <!-- Meia Hora -->
+            <div class="section-subtitle">⏰ RODÍZIO MEIA HORA</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid meia-hora-grid" id="meiaHoraGridGeral"></div>
+                </div>
+            </div>
+
+            <!-- Jovens -->
+            <div class="section-subtitle">👥 RODÍZIO REUNIÃO DE JOVENS E MENORES</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid jovens-grid" id="jovensGridGeral"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Afinação Individual -->
+        <div class="section" id="afinacao">
+            <div class="section-title">🔧 AFINAÇÃO/ENSAIO - PRIMEIRO SÁBADO DO MÊS</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid afinacao-grid" id="afinacaoGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Oficial Individual -->
+        <div class="section" id="oficial">
+            <div class="section-title">🎵 RODÍZIO OFICIAL</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid oficial-grid" id="oficialGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Meia Hora Individual -->
+        <div class="section" id="meia-hora">
+            <div class="section-title">⏰ RODÍZIO MEIA HORA</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid meia-hora-grid" id="meiaHoraGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Jovens Individual -->
+        <div class="section" id="jovens">
+            <div class="section-title">👥 RODÍZIO REUNIÃO DE JOVENS E MENORES</div>
+            <div class="schedule-table">
+                <div class="table-container">
+                    <div class="schedule-grid jovens-grid" id="jovensGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegação inferior -->
+    <div class="tab-navigation">
+        <button class="tab-btn active" data-section="escala-geral">
+            <div class="tab-icon">📋</div>
+            <div>Escala Geral</div>
+        </button>
+        <button class="tab-btn" data-section="afinacao">
+            <div class="tab-icon">🔧</div>
+            <div>Afinação</div>
+        </button>
+        <button class="tab-btn" data-section="oficial">
+            <div class="tab-icon">🎵</div>
+            <div>Oficial</div>
+        </button>
+        <button class="tab-btn" data-section="meia-hora">
+            <div class="tab-icon">⏰</div>
+            <div>Meia Hora</div>
+        </button>
+        <button class="tab-btn" data-section="jovens">
+            <div class="tab-icon">👥</div>
+            <div>Jovens</div>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(registration) {
+                        console.log('✅ ServiceWorker registrado com sucesso:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('❌ Falha ao registrar ServiceWorker:', error);
+                    });
+            });
+        }
+
+        // DEBUG: Verificar se elemento existe após carregamento
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const btn = document.getElementById('organistSelectorButton');
+                console.log('🔍 DEBUG: Botão encontrado?', !!btn);
+                if (btn) {
+                    console.log('✅ Botão existe no DOM');
+                    console.log('📍 Posição:', btn.getBoundingClientRect());
+                } else {
+                    console.error('❌ Botão NÃO encontrado no DOM!');
+                    
+                    // CRIAR BOTÃO MANUALMENTE SE NÃO EXISTIR
+                    const header = document.querySelector('.header');
+                    if (header) {
+                        const newBtn = document.createElement('div');
+                        newBtn.className = 'organist-selector-button';
+                        newBtn.id = 'organistSelectorButton';
+                        newBtn.textContent = '🎹 Selecionar Organista';
+                        header.appendChild(newBtn);
+                        console.log('🔧 Botão criado manualmente!');
+                    }
+                }
+            }, 1000);
+        });
+
+        // PWA - Botão de Instalação Automático
+        let deferredPrompt;
+        let installButton;
+
+        // Criar botão de instalação
+        function createInstallButton() {
+            installButton = document.createElement('button');
+            installButton.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">📱</span>
+                    <span>Instalar App</span>
+                </div>
+            `;
+            installButton.style.cssText = `
+                position: fixed;
+                bottom: 90px;
+                right: 20px;
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                color: white;
+                border: none;
+                padding: 16px 20px;
+                border-radius: 50px;
+                font-weight: 700;
+                font-size: 14px;
+                box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+                cursor: pointer;
+                z-index: 1001;
+                display: none;
+                font-family: 'Inter', sans-serif;
+                transition: all 0.3s ease;
+                animation: pulseInstall 2s infinite;
+            `;
+
+            // Efeitos hover
+            installButton.addEventListener('mouseenter', () => {
+                installButton.style.transform = 'scale(1.05)';
+                installButton.style.boxShadow = '0 12px 35px rgba(99, 102, 241, 0.6)';
+            });
+
+            installButton.addEventListener('mouseleave', () => {
+                installButton.style.transform = 'scale(1)';
+                installButton.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.4)';
+            });
+
+            return installButton;
+        }
+
+        // Adicionar animação CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulseInstall {
+                0%, 100% { 
+                    transform: scale(1); 
+                    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+                }
+                50% { 
+                    transform: scale(1.02); 
+                    box-shadow: 0 12px 35px rgba(99, 102, 241, 0.6);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Detectar quando o app pode ser instalado
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('📱 App pode ser instalado!');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Criar e mostrar botão
+            const button = createInstallButton();
+            button.style.display = 'block';
+            document.body.appendChild(button);
+            
+            // Mostrar notificação
+            setTimeout(() => {
+                showNotification('📱 Você pode instalar este app na sua tela inicial!');
+            }, 3000);
+        });
+
+        // Função para instalar o app
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('🎉 App instalado com sucesso!');
+                        showNotification('🎉 App instalado! Procure o ícone 🎵 na sua tela inicial');
+                        if (installButton) {
+                            installButton.style.display = 'none';
+                        }
+                    } else {
+                        console.log('😕 Usuário cancelou a instalação');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // Adicionar evento de click quando o botão for criado
+        document.addEventListener('click', (e) => {
+            if (e.target.closest && e.target.closest('button') === installButton) {
+                installApp();
+            }
+        });
+
+        // Detectar se já está instalado
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('🎊 App foi instalado!');
+            showNotification('🎊 Instalado! O app já está na sua tela inicial');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+        });
+
+        // Para iOS - mostrar instruções manuais se necessário
+        function showIOSInstructions() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+            
+            if (isIOS && !isInStandaloneMode) {
+                setTimeout(() => {
+                    showNotification('📱 iOS: Toque em Compartilhar → Adicionar à Tela Inicial');
+                }, 5000);
+            }
+        }
+
+        // Verificar iOS após carregamento
+        window.addEventListener('load', showIOSInstructions);
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 120px;
+                left: 15px;
+                right: 15px;
+                background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                color: #92400e;
+                padding: 15px;
+                border-radius: 12px;
+                text-align: center;
+                font-weight: 700;
+                z-index: 1001;
+                box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
+                animation: slideDown 0.5s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.5s ease';
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+        
+        // Toggle Dark Mode
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const bodyElement = document.body;
+        const toggleIcon = document.getElementById('toggleIcon');
+        const toggleText = document.getElementById('toggleText');
+        
+        // Verificar se há preferência salva
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode === 'enabled') {
+            bodyElement.classList.add('dark-mode');
+            toggleIcon.textContent = '☀️';
+            toggleText.textContent = 'Light';
+        }
+        
+        darkModeToggle.addEventListener('click', () => {
+            bodyElement.classList.toggle('dark-mode');
+            
+            if (bodyElement.classList.contains('dark-mode')) {
+                toggleIcon.textContent = '☀️';
+                toggleText.textContent = 'Light';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                toggleIcon.textContent = '🌙';
+                toggleText.textContent = 'Dark';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    </script>
+</body>
+</html>
