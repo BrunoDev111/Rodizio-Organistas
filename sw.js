@@ -1,16 +1,19 @@
-const CACHE_NAME = 'rodizio-organistas-v5.0.0';
+const CACHE_NAME = 'rodizio-organistas-v5.8.0';
 const urlsToCache = [
   './',
   './index.html',
-  './style.css?v=5.0.0',
-  './script.js',
+  './style.css?v=5.8.0',
+  './schedule.js?v=5.8.0',
+  './script.js?v=5.8.0',
   './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Cinzel:wght@600;700;800&family=Lato:wght@300;400;700&display=swap'
 ];
 
 // Instalar o Service Worker
 self.addEventListener('install', function(event) {
-  console.log('🔧 Service Worker: Instalando versão 5.0.0...');
+  console.log('🔧 Service Worker: Instalando...');
   // Força a ativação imediata
   self.skipWaiting();
   
@@ -28,7 +31,7 @@ self.addEventListener('install', function(event) {
 
 // Ativar o Service Worker
 self.addEventListener('activate', function(event) {
-  console.log('✅ Service Worker: Ativado versão 5.0.0');
+  console.log('✅ Service Worker: Ativado');
   
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
@@ -49,6 +52,9 @@ self.addEventListener('activate', function(event) {
 
 // Interceptar requisições
 self.addEventListener('fetch', function(event) {
+  // Funções do Netlify (push) e requisições que não são GET não passam pelo cache
+  if (event.request.method !== 'GET' || new URL(event.request.url).pathname.startsWith('/.netlify/')) return;
+
   event.respondWith(
     // Sempre buscar da rede primeiro, depois cache
     fetch(event.request)
@@ -85,46 +91,35 @@ self.addEventListener('fetch', function(event) {
   );
 });
 
-// Notificações Push (opcional)
+// Lembrete enviado pelo servidor (netlify/functions/push-send-reminders): { title, body }
 self.addEventListener('push', function(event) {
-  const options = {
-    body: event.data ? event.data.text() : 'Nova atualização na escala!',
-    icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"%3E%3Crect width="192" height="192" fill="%236366f1"/%3E%3Ctext x="96" y="130" font-family="Arial" font-size="120" text-anchor="middle" fill="white"%3E🎵%3C/text%3E%3C/svg%3E',
-    badge: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"%3E%3Crect width="96" height="96" fill="%236366f1"/%3E%3Ctext x="48" y="65" font-family="Arial" font-size="60" text-anchor="middle" fill="white"%3E🎵%3C/text%3E%3C/svg%3E',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: '2'
-    },
-    actions: [
-      {
-        action: 'explore', 
-        title: 'Ver Escala',
-        icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="white" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/%3E%3C/svg%3E'
-      },
-      {
-        action: 'close', 
-        title: 'Fechar'
-      }
-    ]
-  };
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { body: event.data.text() };
+  }
 
   event.waitUntil(
-    self.registration.showNotification('Rodízio Organistas', options)
+    self.registration.showNotification(data.title || 'Rodízio Organistas', {
+      body: data.body || 'Nova atualização na escala!',
+      icon: './icons/icon-192.png',
+      badge: './icons/icon-192.png',
+      vibrate: [200, 100, 200]
+    })
   );
 });
 
-// Click em notificações
+// Tocar na notificação abre o app (ou traz para frente se já estiver aberto)
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
 
-  if (event.action === 'explore') {
-    event.waitUntil(clients.openWindow('./'));
-  } else if (event.action === 'close') {
-    event.notification.close();
-  } else {
-    event.waitUntil(clients.openWindow('./'));
-  }
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(windows) {
+      const open = windows.find(function(w) { return 'focus' in w; });
+      return open ? open.focus() : clients.openWindow('./');
+    })
+  );
 });
 
-console.log('🎵 Service Worker do Rodízio Organistas v5.0.0 carregado!');
+console.log('🎵 Service Worker do Rodízio Organistas carregado!');

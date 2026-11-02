@@ -8,10 +8,12 @@
     <meta name="apple-mobile-web-app-title" content="Rodízio Organistas">
     <meta name="theme-color" content="#6366f1">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Cinzel:wght@600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=5.0.0">
+    <link rel="stylesheet" href="style.css?v=5.8.0">
     <title>Rodízio Organistas</title>
 </head>
 <body>
@@ -59,6 +61,10 @@
                 <input type="radio" id="maeme" name="selectedOrganist" value="Maeme">
                 <label for="maeme">Maeme</label>
             </div>
+            <div class="organist-option" data-organist="Regiane">
+                <input type="radio" id="regiane" name="selectedOrganist" value="Regiane">
+                <label for="regiane">Regiane</label>
+            </div>
             <div class="organist-option" data-organist="Helena">
                 <input type="radio" id="helena" name="selectedOrganist" value="Helena">
                 <label for="helena">Helena</label>
@@ -75,6 +81,10 @@
         <div class="notification-status" id="notificationStatus">
             Selecione seu nome para ativar notificações personalizadas
         </div>
+        <!-- Aparece só com o push ativo -->
+        <button class="close-selector-btn push-test-btn" id="pushTestBtn" style="display: none;">
+            🔔 Testar notificação
+        </button>
         <button class="close-selector-btn" id="closeSelectorBtn">
             ❌ Fechar
         </button>
@@ -84,10 +94,10 @@
     <div class="main-content">
         <!-- Seção Escala Geral -->
         <div class="section active" id="escala-geral">
-            <div class="section-title">RODÍZIO ORGANISTAS JARDIM GUARANI<br>JANEIRO A JUNHO 2026</div>
+            <div class="section-title">RODÍZIO ORGANISTAS JARDIM GUARANI<br>JANEIRO A DEZEMBRO <span id="scheduleYearLabel">2026</span></div>
             
             <!-- Afinação -->
-            <div class="section-subtitle">🔧 AFINAÇÃO/ENSAIO - PRIMEIRO SÁBADO DO MÊS</div>
+            <div class="section-subtitle">🔧 AFINAÇÃO/ENSAIO - PRIMEIRO DOMINGO DO MÊS</div>
             <div class="schedule-table">
                 <div class="table-container">
                     <div class="schedule-grid afinacao-grid" id="afinacaoGridGeral"></div>
@@ -121,7 +131,7 @@
 
         <!-- Seção Afinação Individual -->
         <div class="section" id="afinacao">
-            <div class="section-title">🔧 AFINAÇÃO/ENSAIO - PRIMEIRO SÁBADO DO MÊS</div>
+            <div class="section-title">🔧 AFINAÇÃO/ENSAIO - PRIMEIRO DOMINGO DO MÊS</div>
             <div class="schedule-table">
                 <div class="table-container">
                     <div class="schedule-grid afinacao-grid" id="afinacaoGrid"></div>
@@ -184,7 +194,8 @@
         </button>
     </div>
 
-    <script src="script.js"></script>
+    <script src="schedule.js?v=5.8.0"></script>
+    <script src="script.js?v=5.8.0"></script>
     
     <!-- Service Worker Registration -->
     <script>
@@ -199,31 +210,6 @@
                     });
             });
         }
-
-        // DEBUG: Verificar se elemento existe após carregamento
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                const btn = document.getElementById('organistSelectorButton');
-                console.log('🔍 DEBUG: Botão encontrado?', !!btn);
-                if (btn) {
-                    console.log('✅ Botão existe no DOM');
-                    console.log('📍 Posição:', btn.getBoundingClientRect());
-                } else {
-                    console.error('❌ Botão NÃO encontrado no DOM!');
-                    
-                    // CRIAR BOTÃO MANUALMENTE SE NÃO EXISTIR
-                    const header = document.querySelector('.header');
-                    if (header) {
-                        const newBtn = document.createElement('div');
-                        newBtn.className = 'organist-selector-button';
-                        newBtn.id = 'organistSelectorButton';
-                        newBtn.textContent = '🎹 Selecionar Organista';
-                        header.appendChild(newBtn);
-                        console.log('🔧 Botão criado manualmente!');
-                    }
-                }
-            }, 1000);
-        });
 
         // PWA - Botão de Instalação Automático
         let deferredPrompt;

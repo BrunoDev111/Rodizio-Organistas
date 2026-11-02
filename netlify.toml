@@ -1,6 +1,11 @@
 [build]
   publish = "."
-  
+
+# Funções de push (lembretes com o app fechado). Precisam das variáveis de ambiente
+# VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY configuradas no painel do Netlify.
+[functions]
+  directory = "netlify/functions"
+
 [[headers]]
   for = "/manifest.json"
   [headers.values]

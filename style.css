@@ -353,10 +353,14 @@ body.dark-mode .organist-selector-button:hover {
     border: 1px solid var(--border-light);
 }
 
-.organist-option:hover {
-    background: var(--bg-item-hover);
-    color: var(--text-item-hover);
-    transform: scale(1.02);
+/* Só em aparelhos com mouse: no celular o :hover "gruda" depois do toque e
+   parece que a organista continua selecionada */
+@media (hover: hover) {
+    .organist-option:not(.selected):hover {
+        background: var(--bg-item);
+        border-color: var(--accent-color);
+        transform: scale(1.02);
+    }
 }
 
 .organist-option.selected {
@@ -399,6 +403,15 @@ body.dark-mode .organist-option.selected {
 .close-selector-btn:hover {
     background: var(--bg-item-hover);
     color: var(--text-item-hover);
+}
+
+.push-test-btn {
+    border-color: var(--accent-color);
+}
+
+.push-test-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
 }
 
 /* ========== MAIN CONTENT ========== */
@@ -493,7 +506,13 @@ body.dark-mode .divider {
 .oficial-grid,
 .meia-hora-grid,
 .jovens-grid {
-    grid-template-columns: 100px repeat(6, 1fr);
+    grid-template-columns: 100px repeat(12, 1fr);
+}
+
+/* Todas as linhas de organistas com a mesma altura (cabeçalho fica automático) */
+.oficial-grid {
+    grid-template-rows: auto;
+    grid-auto-rows: 1fr;
 }
 
 .grid-header {
@@ -549,6 +568,7 @@ body.dark-mode .organist-name {
 .adriana { border-left: 3px solid #ffa502; }
 .ednice { border-left: 3px solid #eccc68; }
 .maeme { border-left: 3px solid #26de81; }
+.regiane { border-left: 3px solid #45aaf2; }
 .helena { border-left: 3px solid #a29bfe; }
 .lavinia { border-left: 3px solid #fd79a8; }
 .gabriela { border-left: 3px solid #ff7675; }
@@ -633,6 +653,18 @@ body.dark-mode .tuning-btn:hover {
     50% { transform: scale(1.05); }
 }
 
+/* Destaque temporário do tour "quem toca hoje" */
+.schedule-item,
+.tuning-btn {
+    outline: 3px solid transparent;
+    outline-offset: 2px;
+}
+
+.schedule-item.spotlight,
+.tuning-btn.spotlight {
+    outline-color: #d4af37;
+}
+
 .schedule-items-container {
     display: flex;
     flex-direction: column;
@@ -695,14 +727,54 @@ body.dark-mode .tab-navigation {
 
 /* Animações */
 @keyframes slideDownModal {
-    from { 
-        transform: translateY(-20px); 
-        opacity: 0; 
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
     }
-    to { 
-        transform: translateY(0); 
-        opacity: 1; 
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
+}
+
+/* Notificações customizadas (toast) */
+.custom-notification {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    max-width: 320px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    padding: 16px 18px;
+    z-index: 9999;
+    animation: notificationIn 0.4s ease;
+}
+
+.notification-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+}
+
+.notification-message {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+@keyframes notificationIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUpCustom {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(20px); opacity: 0; }
 }
 
 /* ========== RESPONSIVO ========== */
@@ -741,7 +813,7 @@ body.dark-mode .tab-navigation {
     .oficial-grid,
     .meia-hora-grid,
     .jovens-grid {
-        grid-template-columns: 85px repeat(6, 1fr);
+        grid-template-columns: 85px repeat(12, 1fr);
     }
     
     .grid-cell {

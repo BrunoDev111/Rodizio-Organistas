@@ -1,114 +1,18 @@
-// Dados do sistema - ATUALIZADO PARA 2026 (JANEIRO A JUNHO)
-// IMPORTANTE: Janeiro/2026 começa na QUINTA-FEIRA (dia 1)
-const scheduleData = {
-    months: ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN'],
-    monthNumbers: { 'JAN': 1, 'FEV': 2, 'MAR': 3, 'ABR': 4, 'MAI': 5, 'JUN': 6 },
-    weekdayMap: { 'DOM': 0, 'SEG': 1, 'TER': 2, 'QUA': 3, 'QUI': 4, 'SEX': 5, 'SAB': 6 },
-    
-    // Afinação: primeiro sábado de cada mês
-    // Sequência: Gabriela, Arlete, Adriana, Ednice, Maeme, Helena
-    tuning: {
-        'JAN': { day: 3, organist: 'Gabriela' },    // Sábado, 3 de janeiro
-        'FEV': { day: 7, organist: 'Arlete' },      // Sábado, 7 de fevereiro
-        'MAR': { day: 7, organist: 'Adriana' },     // Sábado, 7 de março
-        'ABR': { day: 4, organist: 'Ednice' },      // Sábado, 4 de abril
-        'MAI': { day: 2, organist: 'Maeme' },       // Sábado, 2 de maio
-        'JUN': { day: 6, organist: 'Helena' }       // Sábado, 6 de junho
-    },
-    
-    // Rodízio Oficial: Maeme começa na SEXTA dia 2 de janeiro (PRIMEIRA A TOCAR)
-    // Ordem alfabética na tela: Arlete → Adriana → Ednice → Maeme
-    // Sequência do rodízio: Maeme → Arlete → Adriana → Ednice (repete)
-    oficial: {
-        'Arlete': {
-            'JAN': ['04 DOM', '14 QUA', '23 SEX'],
-            'FEV': ['01 DOM', '11 QUA', '20 SEX'],
-            'MAR': ['01 DOM', '11 QUA', '20 SEX', '29 DOM'],
-            'ABR': ['08 QUA', '17 SEX', '26 DOM'],
-            'MAI': ['06 QUA', '15 SEX', '24 DOM'],
-            'JUN': ['03 QUA', '12 SEX', '21 DOM']
-        },
-        'Adriana': {
-            'JAN': ['07 QUA', '16 SEX', '25 DOM'],
-            'FEV': ['04 QUA', '13 SEX', '22 DOM'],
-            'MAR': ['04 QUA', '13 SEX', '22 DOM'],
-            'ABR': ['01 QUA', '10 SEX', '19 DOM', '29 QUA'],
-            'MAI': ['08 SEX', '17 DOM', '27 QUA'],
-            'JUN': ['05 SEX', '14 DOM', '24 QUA']
-        },
-        'Ednice': {
-            'JAN': ['09 SEX', '18 DOM', '28 QUA'],
-            'FEV': ['06 SEX', '15 DOM', '25 QUA'],
-            'MAR': ['06 SEX', '15 DOM', '25 QUA'],
-            'ABR': ['03 SEX', '12 DOM', '22 QUA'],
-            'MAI': ['01 SEX', '10 DOM', '20 QUA', '29 SEX'],
-            'JUN': ['07 DOM', '17 QUA', '26 SEX']
-        },
-        'Maeme': {
-            'JAN': ['02 SEX', '11 DOM', '21 QUA', '30 SEX'],
-            'FEV': ['08 DOM', '18 QUA', '27 SEX'],
-            'MAR': ['08 DOM', '18 QUA', '27 SEX'],
-            'ABR': ['05 DOM', '15 QUA', '24 SEX'],
-            'MAI': ['03 DOM', '13 QUA', '22 SEX', '31 DOM'],
-            'JUN': ['10 QUA', '19 SEX', '28 DOM']
-        }
-    },
-    
-    // Meia Hora: Helena no primeiro domingo que ela toca Jovens
-    // Lavinia no primeiro domingo que ela toca Jovens
-    meiaHora: {
-        'Helena': {
-            'JAN': ['04 DOM'], 
-            'FEV': ['15 DOM'], 
-            'MAR': ['08 DOM'],
-            'ABR': ['19 DOM'], 
-            'MAI': ['10 DOM'], 
-            'JUN': ['21 DOM']
-        },
-        'Lavinia': {
-            'JAN': ['11 DOM'],  // Mesmo dia de Jovens
-            'FEV': ['01 DOM'],  // Mesmo dia de Jovens
-            'MAR': ['15 DOM'],  // Mesmo dia de Jovens
-            'ABR': ['05 DOM'],  // Mesmo dia de Jovens
-            'MAI': ['17 DOM'],  // Mesmo dia de Jovens
-            'JUN': ['07 DOM']   // Mesmo dia de Jovens
-        }
-    },
-    
-    jovens: {
-        'Helena': {
-            'JAN': ['04 DOM', '25 DOM'], 
-            'FEV': ['15 DOM'],
-            'MAR': ['08 DOM', '29 DOM'], 
-            'ABR': ['19 DOM'],
-            'MAI': ['10 DOM', '31 DOM'], 
-            'JUN': ['21 DOM']
-        },
-        'Lavinia': {
-            'JAN': ['11 DOM'], 
-            'FEV': ['01 DOM', '22 DOM'],
-            'MAR': ['15 DOM'], 
-            'ABR': ['05 DOM', '26 DOM'],
-            'MAI': ['17 DOM'], 
-            'JUN': ['07 DOM', '28 DOM']
-        },
-        'Gabriela': {
-            'JAN': ['18 DOM'], 
-            'FEV': ['08 DOM'],
-            'MAR': ['01 DOM', '22 DOM'], 
-            'ABR': ['12 DOM'],
-            'MAI': ['03 DOM', '24 DOM'], 
-            'JUN': ['14 DOM']
-        }
-    }
-};
+// Ano exibido pelo app (2026 = dados fixos; depois = gerado). Dados e regras ficam em schedule.js
+let scheduleYear = FIXED_SCHEDULE_YEAR;
+
+function loadScheduleYear(year) {
+    scheduleYear = Math.max(year, FIXED_SCHEDULE_YEAR);
+    Object.assign(scheduleData, getScheduleForYear(scheduleYear));
+}
+
+loadScheduleYear(new Date().getFullYear());
 
 // Variáveis globais
 let selectedOrganist = null;
 let highlightEnabled = true;
-let notificationPermission = false;
+let notificationPermission = 'Notification' in window && Notification.permission === 'granted';
 let selectorOpen = false;
-let notificationsSent = false;
 
 // SEMPRE usar a data atual do sistema
 function getCurrentDate() {
@@ -133,7 +37,7 @@ async function requestNotificationPermission() {
     return false;
 }
 
-function showCustomNotification(title, message, type = 'info') {
+function showCustomNotification(title, message, { system = true } = {}) {
     const notification = document.createElement('div');
     notification.className = 'custom-notification';
     
@@ -149,145 +53,174 @@ function showCustomNotification(title, message, type = 'info') {
     notification.appendChild(messageEl);
     document.body.appendChild(notification);
     
-    // Mostrar notificação do navegador também
-    if (notificationPermission) {
-        new Notification(title, {
-            body: message,
-            icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"%3E%3Crect width="192" height="192" fill="%236366f1"/%3E%3Ctext x="96" y="130" font-family="Arial" font-size="120" text-anchor="middle" fill="white"%3E🎵%3C/text%3E%3C/svg%3E',
-            vibrate: [200, 100, 200],
-            tag: 'organist-reminder'
-        });
-    }
-    
+    // Mostrar notificação do sistema também
+    if (system) showSystemNotification(title, message);
+
     setTimeout(() => {
         notification.style.animation = 'slideUpCustom 0.5s ease';
         setTimeout(() => notification.remove(), 500);
     }, 5000);
 }
 
-// Verificar se a organista tem compromisso em uma data específica
-function checkOrganistSchedule(organist, date) {
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const weekday = date.getDay();
-    const monthName = getMonthName(month);
-    
-    if (!monthName) return null;
-    
-    // Verificar afinação
-    const tuningInfo = scheduleData.tuning[monthName];
-    if (tuningInfo && tuningInfo.organist === organist && weekday === 6 && day === tuningInfo.day) {
-        return {
-            type: 'afinacao',
-            time: '09:00',
-            description: 'Afinação e Ensaio'
-        };
-    }
-    
-    // Verificar rodízio oficial
-    if (scheduleData.oficial[organist] && scheduleData.oficial[organist][monthName]) {
-        for (const item of scheduleData.oficial[organist][monthName]) {
-            const match = item.match(/^(\d{1,2})\s+(\w{3})$/);
-            if (match) {
-                const scheduleDay = parseInt(match[1]);
-                const scheduleWeekday = match[2];
-                if (scheduleDay === day && scheduleData.weekdayMap[scheduleWeekday] === weekday) {
-                    const time = scheduleWeekday === 'DOM' ? '18:30' : '19:30';
-                    return {
-                        type: 'oficial',
-                        time: time,
-                        description: `Culto ${scheduleWeekday === 'DOM' ? 'Dominical' : 'de Oração'}`
-                    };
-                }
-            }
-        }
-    }
-    
-    // Verificar meia hora
-    if (scheduleData.meiaHora[organist] && scheduleData.meiaHora[organist][monthName]) {
-        for (const item of scheduleData.meiaHora[organist][monthName]) {
-            const match = item.match(/^(\d{1,2})\s+(\w{3})$/);
-            if (match) {
-                const scheduleDay = parseInt(match[1]);
-                const scheduleWeekday = match[2];
-                if (scheduleDay === day && scheduleData.weekdayMap[scheduleWeekday] === weekday) {
-                    return {
-                        type: 'meia-hora',
-                        time: '18:00',
-                        description: 'Culto Meia Hora'
-                    };
-                }
-            }
-        }
-    }
-    
-    // Verificar jovens
-    if (scheduleData.jovens[organist] && scheduleData.jovens[organist][monthName]) {
-        for (const item of scheduleData.jovens[organist][monthName]) {
-            const match = item.match(/^(\d{1,2})\s+(\w{3})$/);
-            if (match) {
-                const scheduleDay = parseInt(match[1]);
-                const scheduleWeekday = match[2];
-                if (scheduleDay === day && scheduleData.weekdayMap[scheduleWeekday] === weekday) {
-                    return {
-                        type: 'jovens',
-                        time: '19:00',
-                        description: 'Reunião de Jovens e Menores'
-                    };
-                }
-            }
-        }
-    }
-    
-    return null;
+// No Android, `new Notification()` é proibido (lança erro): é obrigatório usar o Service Worker
+function showSystemNotification(title, body) {
+    if (!notificationPermission) return;
+    const options = { body, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', vibrate: [200, 100, 200] };
+
+    const fallback = () => {
+        try { new Notification(title, options); } catch (e) { console.warn('Notificação do sistema indisponível:', e); }
+    };
+
+    if (!('serviceWorker' in navigator)) return fallback();
+    navigator.serviceWorker.getRegistration()
+        .then(reg => reg ? reg.showNotification(title, options) : fallback())
+        .catch(fallback);
 }
 
-// Sistema de notificações inteligente baseado na escala real
-function checkUpcomingSchedules() {
-    if (!selectedOrganist || notificationsSent) return;
-    
-    const now = getCurrentDate();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    // Verificar compromissos reais da organista
-    const tomorrowSchedule = checkOrganistSchedule(selectedOrganist, tomorrow);
-    const todaySchedule = checkOrganistSchedule(selectedOrganist, now);
-    
-    notificationsSent = true;
-    
-    // Simular notificações baseadas na escala real
-    if (tomorrowSchedule) {
-        setTimeout(() => {
-            showCustomNotification(
-                `🗓️ Lembrete: ${selectedOrganist}`,
-                `Amanhã você tem ${tomorrowSchedule.description} às ${tomorrowSchedule.time}. Prepare-se com antecedência!`
-            );
-        }, 2000);
-    } else {
-        setTimeout(() => {
-            showCustomNotification(
-                `🗓️ Lembrete: ${selectedOrganist}`,
-                `Você não tem compromissos musicais amanhã. Aproveite para descansar! 😊`
-            );
-        }, 2000);
+// Alertas já enviados ficam salvos para não repetir a cada vez que o app é aberto
+const NOTIFIED_STORAGE_KEY = 'notifiedEvents';
+let notifiedProximityEvents = loadNotifiedEvents();
+
+function loadNotifiedEvents() {
+    try {
+        return new Set(JSON.parse(localStorage.getItem(NOTIFIED_STORAGE_KEY)) || []);
+    } catch (e) {
+        return new Set();
     }
-    
-    if (todaySchedule) {
-        setTimeout(() => {
-            showCustomNotification(
-                `⏰ Atenção: ${selectedOrganist}`,
-                `Hoje você tem ${todaySchedule.description} às ${todaySchedule.time}. Revise as músicas!`
-            );
-        }, 5000);
-        
-        setTimeout(() => {
-            showCustomNotification(
-                `🎹 Hora de se preparar: ${selectedOrganist}`,
-                `${todaySchedule.description} em 45 minutos (${todaySchedule.time})! É hora de ir para a igreja. Não esqueça das partituras!`
-            );
-        }, 8000);
+}
+
+function saveNotifiedEvents() {
+    try {
+        localStorage.setItem(NOTIFIED_STORAGE_KEY, JSON.stringify([...notifiedProximityEvents].slice(-100)));
+    } catch (e) { /* armazenamento indisponível */ }
+}
+
+function checkScheduledNotifications() {
+    if (!selectedOrganist) return;
+
+    for (const alert of computeDueNotifications(selectedOrganist, getCurrentDate(), notifiedProximityEvents)) {
+        alert.keys.forEach(k => notifiedProximityEvents.add(k));
+        saveNotifiedEvents();
+        // Com push ativo o servidor já manda a notificação do sistema: aqui só o aviso dentro do app
+        showCustomNotification(alert.title, alert.body, { system: !isPushActive() });
     }
+}
+
+// ===== Push: lembretes com o app fechado (servidor no Netlify, ver netlify/) =====
+const PUSH_ENDPOINT = '/.netlify/functions/push-subscribe';
+const PUSH_STORAGE_KEY = 'pushOrganist';
+
+function isPushActive() {
+    try {
+        return !!selectedOrganist && localStorage.getItem(PUSH_STORAGE_KEY) === selectedOrganist;
+    } catch (e) {
+        return false;
+    }
+}
+
+function urlBase64ToUint8Array(base64) {
+    const padding = '='.repeat((4 - base64.length % 4) % 4);
+    const raw = atob((base64 + padding).replace(/-/g, '+').replace(/_/g, '/'));
+    return Uint8Array.from(raw, c => c.charCodeAt(0));
+}
+
+function postPushSubscription(subscription, organist) {
+    // Manda junto os lembretes que este aparelho já mostrou, para o servidor não repetir
+    const sent = organist ? [...notifiedProximityEvents].filter(k => k.startsWith(`${organist}_`)) : [];
+    return fetch(PUSH_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription: subscription.toJSON(), organist, sent })
+    });
+}
+
+// Cadastra (ou atualiza) este aparelho no servidor para receber os lembretes da organista.
+// organist = null descadastra. Sem servidor (ex.: rodando local) só retorna false.
+async function syncPushSubscription(organist) {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        let subscription = await reg.pushManager.getSubscription();
+
+        if (!organist) {
+            if (subscription) {
+                await postPushSubscription(subscription, null);
+                await subscription.unsubscribe();
+            }
+            localStorage.removeItem(PUSH_STORAGE_KEY);
+            return false;
+        }
+
+        if (!notificationPermission) return false;
+        if (!subscription) {
+            const res = await fetch(PUSH_ENDPOINT);
+            if (!res.ok) throw new Error(`push-subscribe GET ${res.status}`);
+            const { publicKey } = await res.json();
+            subscription = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicKey)
+            });
+        }
+
+        const res = await postPushSubscription(subscription, organist);
+        if (!res.ok) throw new Error(`push-subscribe POST ${res.status}`);
+        localStorage.setItem(PUSH_STORAGE_KEY, organist);
+        return true;
+    } catch (e) {
+        console.warn('Push indisponível, avisos só com o app aberto:', e);
+        try { localStorage.removeItem(PUSH_STORAGE_KEY); } catch (_) { /* sem armazenamento */ }
+        return false;
+    }
+}
+
+function pushStatusText(organist, pushActive) {
+    return pushActive
+        ? `✅ Notificações ativadas para ${organist} — chegam mesmo com o app fechado`
+        : `✅ Notificações ativadas para ${organist} (com o app aberto)`;
+}
+
+// Atualiza o texto do seletor e mostra o botão de teste só com o push ativo
+function showPushStatus(organist, pushActive) {
+    const statusElement = document.getElementById('notificationStatus');
+    if (statusElement) statusElement.textContent = pushStatusText(organist, pushActive);
+    const testBtn = document.getElementById('pushTestBtn');
+    if (testBtn) testBtn.style.display = pushActive ? 'block' : 'none';
+}
+
+// Botão "Testar notificação": o servidor manda um push que chega ~5 s depois
+const PUSH_TEST_ENDPOINT = '/.netlify/functions/push-test';
+
+function setupPushTestButton() {
+    const btn = document.getElementById('pushTestBtn');
+    const statusElement = document.getElementById('notificationStatus');
+    if (!btn) return;
+
+    btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            const subscription = await reg.pushManager.getSubscription();
+            if (!subscription) throw new Error('aparelho sem inscrição de push');
+
+            statusElement.textContent = '📨 Enviando... pode fechar o app: a notificação chega em uns 5 segundos.';
+            // keepalive: o pedido segue mesmo se o app for fechado logo em seguida
+            const res = await fetch(PUSH_TEST_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subscription: subscription.toJSON() }),
+                keepalive: true
+            });
+            const data = await res.json().catch(() => ({}));
+            statusElement.textContent = res.ok
+                ? '✅ Teste enviado! Se a notificação apareceu, está tudo certo.'
+                : `⚠️ ${data.error || 'Falha no teste'}`;
+        } catch (e) {
+            console.warn('Teste de push falhou:', e);
+            statusElement.textContent = '⚠️ Não foi possível testar agora. Toque duas vezes no seu nome e tente de novo.';
+        } finally {
+            setTimeout(() => { btn.disabled = false; }, 5000);
+        }
+    });
 }
 
 // NOVO: Configuração do botão de seleção de organista
@@ -365,42 +298,51 @@ function setupOrganistSelector() {
     const statusElement = document.getElementById('notificationStatus');
     
     options.forEach(option => {
-        option.addEventListener('click', async function() {
+        option.addEventListener('click', async function(e) {
+            // Clicar no <label> gera um segundo clique no <input>; trata só esse segundo
+            if (e.target.tagName === 'LABEL') return;
+
             const radio = this.querySelector('input[type="radio"]');
             const organist = this.dataset.organist;
-            
-            console.log('🎹 Organista selecionado:', organist);
-            
+
             // Limpar seleções anteriores
             options.forEach(opt => opt.classList.remove('selected'));
-            
-            // Resetar notificações para novo organista
-            notificationsSent = false;
-            
+
+            // Tocar de novo na organista já selecionada desmarca
+            if (selectedOrganist === organist) {
+                console.log('🎹 Organista desmarcada:', organist);
+                radio.checked = false;
+                selectedOrganist = null;
+                localStorage.removeItem('selectedOrganist');
+                statusElement.textContent = 'Nenhuma organista selecionada. Notificações desativadas.';
+                focusNearestDate('smooth');
+                document.getElementById('pushTestBtn').style.display = 'none';
+                syncPushSubscription(null);
+                return;
+            }
+
+            console.log('🎹 Organista selecionado:', organist);
+
             // Selecionar atual
             this.classList.add('selected');
             radio.checked = true;
             selectedOrganist = organist;
-            
+            localStorage.setItem('selectedOrganist', organist);
+            focusNearestDate('smooth');
+
             // Solicitar permissão para notificações
             const permission = await requestNotificationPermission();
-            
+
             if (permission) {
-                statusElement.textContent = `✅ Notificações ativadas para ${organist}`;
-                showCustomNotification(
-                    `🎵 Bem-vinda, ${organist}!`,
-                    `Notificações ativadas! Você receberá lembretes personalizados dos seus compromissos musicais.`
-                );
-                
-                // Fechar seletor automaticamente após seleção
+                showPushStatus(organist, false);
+                checkScheduledNotifications();
+                syncPushSubscription(organist).then(pushActive => {
+                    if (selectedOrganist === organist) showPushStatus(organist, pushActive);
+                });
+
                 setTimeout(() => {
                     closeSelector();
                 }, 3000);
-                
-                // Iniciar simulação de notificações APENAS UMA VEZ
-                setTimeout(() => {
-                    checkUpcomingSchedules();
-                }, 5000);
             } else {
                 statusElement.textContent = `⚠️ ${organist} selecionada, mas notificações não autorizadas`;
             }
@@ -415,24 +357,55 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTabNavigation();
     setupOrganistSelectorButton();
     setupOrganistSelector();
+    setupPushTestButton();
     updateCurrentDate();
-    buildAllSchedules();
+    showScheduleYear(scheduleYear);
     updateHighlights();
     setupToggle();
-    
-    const selectorButton = document.getElementById('organistSelectorButton');
-    const selector = document.getElementById('organistSelector');
-    
-    console.log('🔍 Elementos encontrados:', {
-        botao: !!selectorButton,
-        seletor: !!selector
-    });
-    
+
     setInterval(() => {
         updateCurrentDate();
         updateHighlights();
+        checkScheduledNotifications();
     }, 60000);
-    
+
+    // Restaurar organista salva
+    const saved = localStorage.getItem('selectedOrganist');
+    if (saved) {
+        const option = document.querySelector(`.organist-option[data-organist="${saved}"]`);
+        if (option) {
+            option.classList.add('selected');
+            option.querySelector('input[type="radio"]').checked = true;
+            selectedOrganist = saved;
+            // Sem gesto do usuário o navegador bloqueia o pedido de permissão: só lê o estado atual
+            const statusElement = document.getElementById('notificationStatus');
+            if (notificationPermission) {
+                showPushStatus(saved, isPushActive());
+                // Mantém o cadastro do push em dia (ex.: inscrição renovada pelo navegador)
+                syncPushSubscription(saved).then(pushActive => {
+                    if (selectedOrganist === saved) showPushStatus(saved, pushActive);
+                });
+            } else if (statusElement) {
+                statusElement.textContent = `⚠️ ${saved} selecionada, mas notificações não autorizadas. Toque duas vezes no seu nome para autorizar.`;
+            }
+        }
+    }
+
+    // Alertas que venceram enquanto o app estava fechado
+    checkScheduledNotifications();
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            updateCurrentDate();
+            updateHighlights();
+            checkScheduledNotifications();
+        }
+    });
+
+    // Focar na data mais próxima (depois de restaurar a organista salva) e
+    // apresentar quem toca hoje
+    focusNearestDate();
+    setTimeout(playTodayTour, 400);
+
     console.log('✅ App carregado com botão de seleção no header!');
 });
 
@@ -444,9 +417,124 @@ function setupTabNavigation() {
             
             this.classList.add('active');
             document.getElementById(this.dataset.section).classList.add('active');
+            cancelTour();
+            focusNearestDate();
         });
     });
 }
+
+// Data (meia-noite) de um item da escala: .schedule-item ("08 DOM") ou .tuning-btn
+function getItemDate(el) {
+    const month = el.dataset.month;
+    const day = el.classList.contains('tuning-btn')
+        ? scheduleData.tuning[month].day
+        : parseInt(el.dataset.schedule);
+    return new Date(scheduleYear, scheduleData.monthNumbers[month] - 1, day);
+}
+
+// Próximo item (de hoje em diante) dentro de root; se organist for passado, só dela
+function findNextItem(root, organist) {
+    const now = getCurrentDate();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let best = null;
+    let bestDate = null;
+
+    root.querySelectorAll('.schedule-item, .tuning-btn').forEach(el => {
+        if (organist && el.dataset.organist !== organist) return;
+        const date = getItemDate(el);
+        if (date < today) return;
+        if (!best || date < bestDate) {
+            best = el;
+            bestDate = date;
+        }
+    });
+    return best;
+}
+
+function isToday(el) {
+    const now = getCurrentDate();
+    const date = getItemDate(el);
+    return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();
+}
+
+// Centraliza el na horizontal dentro da sua tabela
+function centerHorizontally(el, behavior = 'auto') {
+    const container = el.closest('.table-container');
+    if (!container) return;
+    const offset = el.getBoundingClientRect().left - container.getBoundingClientRect().left + container.scrollLeft;
+    container.scrollTo({ left: offset - (container.clientWidth - el.offsetWidth) / 2, behavior });
+}
+
+// Centraliza el na vertical, na área visível entre o header e a navegação inferior
+function centerVertically(el, behavior = 'auto') {
+    const rect = el.getBoundingClientRect();
+    const headerBottom = document.querySelector('.header')?.getBoundingClientRect().bottom || 0;
+    const navTop = document.querySelector('.tab-navigation')?.getBoundingClientRect().top || window.innerHeight;
+    const visibleCenter = (headerBottom + navTop) / 2;
+    window.scrollTo({ top: window.scrollY + rect.top + rect.height / 2 - visibleCenter, behavior });
+}
+
+// Rola cada tabela da aba ativa até a data mais próxima e centraliza a tela nela.
+// Com organista selecionada, prioriza a data dela.
+function focusNearestDate(behavior = 'auto') {
+    const section = document.querySelector('.section.active');
+    if (!section) return;
+
+    const organist = selectedOrganist;
+    const pickTarget = root => (organist && findNextItem(root, organist)) || findNextItem(root);
+
+    section.querySelectorAll('.table-container').forEach(container => {
+        // Sem datas futuras na tabela: mostra dezembro
+        const target = pickTarget(container) || container.querySelectorAll('.grid-header')[scheduleData.months.length];
+        if (target) centerHorizontally(target, behavior);
+    });
+
+    const target = pickTarget(section);
+    if (target) centerVertically(target, behavior);
+}
+
+// Ao abrir: passa 1.5s em cada organista que toca hoje e depois volta para a data
+// da organista selecionada. Qualquer toque/rolagem do usuário interrompe.
+const TOUR_STEP_MS = 1500;
+let tourTimers = [];
+
+function clearSpotlight() {
+    document.querySelectorAll('.spotlight').forEach(el => el.classList.remove('spotlight'));
+}
+
+function cancelTour() {
+    tourTimers.forEach(clearTimeout);
+    tourTimers = [];
+    clearSpotlight();
+}
+
+function playTodayTour() {
+    cancelTour();
+    const section = document.querySelector('.section.active');
+    if (!section) return;
+
+    const todayItems = [...section.querySelectorAll('.schedule-item, .tuning-btn')].filter(isToday);
+    if (!todayItems.length) return focusNearestDate('smooth');
+
+    todayItems.forEach((el, i) => {
+        tourTimers.push(setTimeout(() => {
+            clearSpotlight();
+            el.classList.add('spotlight');
+            centerHorizontally(el, 'smooth');
+            centerVertically(el, 'smooth');
+        }, i * TOUR_STEP_MS));
+    });
+
+    tourTimers.push(setTimeout(() => {
+        tourTimers = [];
+        clearSpotlight();
+        focusNearestDate('smooth');
+    }, todayItems.length * TOUR_STEP_MS));
+}
+
+['touchstart', 'wheel', 'mousedown', 'keydown'].forEach(type => {
+    window.addEventListener(type, () => { if (tourTimers.length) cancelTour(); }, { passive: true });
+});
 
 function setupToggle() {
     const toggle = document.getElementById('highlightToggle');
@@ -507,7 +595,8 @@ function buildAfinacaoGrid(gridId) {
         if (tuningInfo) {
             const btn = document.createElement('div');
             btn.className = 'tuning-btn';
-            btn.textContent = `${String(tuningInfo.day).padStart(2, '0')} SAB\n${tuningInfo.organist}`;
+            const weekdayLabel = ['DOM','SEG','TER','QUA','QUI','SEX','SAB'][tuningInfo.weekday];
+            btn.textContent = `${String(tuningInfo.day).padStart(2, '0')} ${weekdayLabel}\n${tuningInfo.organist}`;
             btn.dataset.month = month;
             btn.dataset.organist = tuningInfo.organist;
             cell.appendChild(btn);
@@ -523,10 +612,10 @@ function buildOficialGrid(gridId) {
     
     createHeader(grid);
     
-    const organistOrder = ['Arlete', 'Adriana', 'Ednice', 'Maeme'];
+    const organistOrder = ['Arlete', 'Adriana', 'Ednice', 'Maeme', 'Regiane'];
     
     organistOrder.forEach(organist => {
-        const schedule = scheduleData.oficial[organist];
+        const schedule = scheduleData.oficial[organist] || {};
         
         const nameCell = document.createElement('div');
         nameCell.className = `grid-cell organist-name ${organist.toLowerCase()}`;
@@ -648,12 +737,12 @@ function updateHighlights() {
     const currentWeekday = now.getDay();
     const currentMonthName = getMonthName(currentMonth);
 
-    if (!currentMonthName) return;
+    if (!currentMonthName || now.getFullYear() !== scheduleYear) return;
 
     console.log(`📅 Verificando destaques para: ${currentDay}/${currentMonth} (${currentMonthName}) - ${['DOM','SEG','TER','QUA','QUI','SEX','SAB'][currentWeekday]}`);
 
     const tuningInfo = scheduleData.tuning[currentMonthName];
-    if (tuningInfo && currentWeekday === 6 && currentDay === tuningInfo.day) {
+    if (tuningInfo && currentWeekday === tuningInfo.weekday && currentDay === tuningInfo.day) {
         console.log(`🔧 Destaque afinação: ${tuningInfo.organist}`);
         
         document.querySelectorAll('.tuning-btn').forEach(btn => {
@@ -693,7 +782,7 @@ function checkScheduleToday(scheduleItem, month) {
     const currentMonth = now.getMonth() + 1;
     const currentWeekday = now.getDay();
     
-    if (currentMonth !== month) return false;
+    if (currentMonth !== month || now.getFullYear() !== scheduleYear) return false;
     
     const match = scheduleItem.match(/^(\d{1,2})\s+(\w{3})$/);
     if (!match) return false;
@@ -705,24 +794,37 @@ function checkScheduleToday(scheduleItem, month) {
 }
 
 function getMonthName(monthNumber) {
-    const monthNames = { 1: 'JAN', 2: 'FEV', 3: 'MAR', 4: 'ABR', 5: 'MAI', 6: 'JUN' };
+    const monthNames = { 1: 'JAN', 2: 'FEV', 3: 'MAR', 4: 'ABR', 5: 'MAI', 6: 'JUN', 7: 'JUL', 8: 'AGO', 9: 'SET', 10: 'OUT', 11: 'NOV', 12: 'DEZ' };
     return monthNames[monthNumber] || null;
 }
 
-function testDate(day, month, year = 2026) {
+// Troca o ano da escala e redesenha as tabelas
+function showScheduleYear(year) {
+    loadScheduleYear(year);
+    buildAllSchedules();
+    const yearLabel = document.getElementById('scheduleYearLabel');
+    if (yearLabel) yearLabel.textContent = scheduleYear;
+}
+
+function testDate(day, month, year = new Date().getFullYear()) {
     console.warn('⚠️ MODO TESTE ATIVADO - Esta função é apenas para debug');
     const testDateObj = new Date(year, month - 1, day);
-    
+
     const originalGetCurrentDate = getCurrentDate;
+    const originalYear = scheduleYear;
     window.getCurrentDate = () => testDateObj;
-    
+    if (year !== scheduleYear) showScheduleYear(year);
+
     updateCurrentDate();
     updateHighlights();
-    
+    focusNearestDate();
+    playTodayTour();
+
     console.log(`🧪 Testando data: ${day}/${month}/${year}`);
     
     setTimeout(() => {
         window.getCurrentDate = originalGetCurrentDate;
+        if (scheduleYear !== originalYear) showScheduleYear(originalYear);
         updateCurrentDate();
         updateHighlights();
         console.log('🔄 Voltando para data real');
@@ -738,21 +840,48 @@ function testNotifications() {
         return;
     }
     
-    notificationsSent = false;
-    
+    console.log('🔔 Permissão do navegador:', 'Notification' in window ? Notification.permission : 'não suportado');
     showCustomNotification(
-        '🧪 Teste de Notificações',
-        'Iniciando simulação de notificações para demonstração...'
+        `🧪 Teste: ${selectedOrganist}`,
+        notificationPermission
+            ? 'Se apareceu também uma notificação do sistema, está tudo funcionando! 😊'
+            : 'Notificações do sistema não autorizadas — só o aviso dentro do app aparece.'
     );
-    
-    checkUpcomingSchedules();
+}
+
+// Simula estar a X minutos do horário de um compromisso real da organista selecionada
+function testCloseToCulto(day, month, hour, minute, year = new Date().getFullYear()) {
+    if (!selectedOrganist) {
+        console.warn('⚠️ Selecione uma organista antes de testar.');
+        return;
+    }
+
+    console.warn('⚠️ MODO TESTE ATIVADO - Esta função é apenas para debug');
+    const testDateObj = new Date(year, month - 1, day, hour, minute);
+
+    const originalGetCurrentDate = getCurrentDate;
+    const originalNotified = notifiedProximityEvents;
+    window.getCurrentDate = () => testDateObj;
+    notifiedProximityEvents = new Set();
+
+    console.log(`🧪 Simulando horário: ${testDateObj.toLocaleString('pt-BR')}`);
+    checkScheduledNotifications();
+
+    setTimeout(() => {
+        window.getCurrentDate = originalGetCurrentDate;
+        notifiedProximityEvents = originalNotified;
+        saveNotifiedEvents();
+        console.log('🔄 Voltando para horário real');
+    }, 10000);
 }
 
 window.testDate = testDate;
 window.testNotifications = testNotifications;
+window.testCloseToCulto = testCloseToCulto;
 
 console.log('🎵 App Rodízio Organistas carregado!');
 console.log('📅 Funcionando com data real do sistema');
 console.log('🔧 Use testDate(dia, mes) no console para testar outras datas');
 console.log('🔔 Use testNotifications() para testar as notificações');
+console.log('⏰ Use testCloseToCulto(dia, mes, hora, minuto) para simular estar perto do horário do culto');
 console.log('🎹 Botão de seleção de organista agora no header!');
