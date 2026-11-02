@@ -170,8 +170,10 @@ body.dark-mode::after {
     transition: all 0.5s ease;
 }
 
+/* Fundo sólido: com degradê transparente, a tabela aparecia por trás do título
+   e a borda dourada do header cortava o conteúdo */
 body.dark-mode .header {
-    background: linear-gradient(180deg, #0a0a0a 0%, transparent 100%);
+    background: #0a0a0a;
     box-shadow: none;
 }
 
@@ -307,7 +309,7 @@ body.dark-mode .organist-selector-button:hover {
 /* ========== SELETOR DE ORGANISTA ========== */
 .organist-selector {
     position: fixed;
-    top: 120px;
+    top: calc(var(--header-h, 115px) + 5px);
     left: 15px;
     right: 15px;
     background: var(--bg-selector);
@@ -416,7 +418,8 @@ body.dark-mode .organist-option.selected {
 
 /* ========== MAIN CONTENT ========== */
 .main-content {
-    margin-top: 115px;
+    /* --header-h = altura real do header (script.js), que muda conforme a tela/fonte */
+    margin-top: var(--header-h, 115px);
     padding: 15px;
     padding-bottom: 80px;
     position: relative;
@@ -489,10 +492,30 @@ body.dark-mode .divider {
     transition: all 0.5s ease;
 }
 
+/* Quantos meses cabem inteiros na tela, ao lado da coluna fixa dos nomes */
+:root {
+    --name-col: 100px;
+    --months-visible: 12;
+}
+
+@media (max-width: 1100px) { :root { --months-visible: 8; } }
+@media (max-width: 800px)  { :root { --months-visible: 6; } }
+@media (max-width: 600px)  { :root { --months-visible: 4; } }
+@media (max-width: 480px)  { :root { --name-col: 85px; } }
+@media (max-width: 370px)  { :root { --months-visible: 3; } }
+
 .table-container {
     overflow-x: auto;
     width: 100%;
     -webkit-overflow-scrolling: touch;
+    /* "Trava" no mês: a rolagem sempre para com um mês inteiro logo depois dos nomes */
+    container-type: inline-size;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: calc(var(--name-col) + 1px);
+}
+
+.schedule-grid > .grid-header:not(:first-child) {
+    scroll-snap-align: start;
 }
 
 .schedule-grid {
@@ -503,13 +526,27 @@ body.dark-mode .divider {
        some junto quando a tabela rola para a direita */
     width: min-content;
     min-width: 100%;
+    /* Nada que vaze de uma caixa aumenta a rolagem (senão o último mês desalinha a "trava") */
+    overflow: clip;
 }
 
 .afinacao-grid,
 .oficial-grid,
 .meia-hora-grid,
 .jovens-grid {
-    grid-template-columns: 100px repeat(12, 1fr);
+    grid-template-columns: var(--name-col) repeat(12, 1fr);
+}
+
+/* Cada mês com a largura exata para caberem --months-visible meses inteiros (1px = linha entre colunas) */
+@supports (width: 1cqw) {
+    .afinacao-grid,
+    .oficial-grid,
+    .meia-hora-grid,
+    .jovens-grid {
+        grid-template-columns:
+            var(--name-col)
+            repeat(12, calc((100cqw - var(--name-col) - var(--months-visible) * 1px) / var(--months-visible)));
+    }
 }
 
 /* Todas as linhas de organistas com a mesma altura (cabeçalho fica automático) */
@@ -564,6 +601,29 @@ body.dark-mode .grid-header {
 
 body.dark-mode .organist-name {
     color: #d4af37;
+}
+
+/* Mês no topo de cada caixa (para se localizar sem olhar o cabeçalho) */
+.cell-month {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+}
+
+body.dark-mode .cell-month {
+    color: rgba(212, 175, 55, 0.6);
+}
+
+/* O mês fica no topo e as datas ocupam/centralizam no resto da caixa */
+.grid-cell > .cell-month ~ .schedule-items-container {
+    flex: 1;
+    height: auto;
+}
+
+.grid-cell > .cell-month ~ .tuning-btn {
+    margin: auto 0;
 }
 
 /* Coluna dos nomes fixa: ao rolar os meses para a direita, os nomes continuam visíveis */
@@ -791,9 +851,30 @@ body.dark-mode .tab-navigation {
 
 /* ========== RESPONSIVO ========== */
 @media (max-width: 480px) {
+    /* Header em linhas: título + sol / data / botões (antes os botões ficavam por cima do título) */
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 12px 12px 10px;
+    }
+
+    .header-content {
+        flex: 1 1 100%;
+        text-align: left;
+        padding-right: 52px;
+    }
+
+    .organist-selector-button,
+    .toggle-container {
+        position: static;
+    }
+
     .dark-mode-toggle {
         top: 0;
-        right: -5px;
+        right: 0;
         padding: 6px 12px;
     }
     
@@ -802,30 +883,30 @@ body.dark-mode .tab-navigation {
     }
     
     .organist-selector-button {
-        top: 50px;
-        left: 10px;
-        padding: 6px 12px;
+        padding: 7px 12px;
         font-size: 10px;
+        letter-spacing: 1px;
     }
     
     .organist-selector {
         padding: 16px;
-        top: 105px;
+        top: calc(var(--header-h, 105px) + 5px);
     }
-    
+
     .organist-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .main-content {
-        margin-top: 105px;
+        margin-top: var(--header-h, 105px);
     }
-    
-    .afinacao-grid,
-    .oficial-grid,
-    .meia-hora-grid,
-    .jovens-grid {
-        grid-template-columns: 85px repeat(12, 1fr);
+
+    /* Título numa linha só (em duas, ele ficava por baixo dos botões) */
+    .app-title {
+        font-size: clamp(14px, 4.8vw, 22px);
+        letter-spacing: 1px;
+        white-space: nowrap;
+        margin-bottom: 2px;
     }
     
     .grid-cell {
@@ -846,9 +927,24 @@ body.dark-mode .tab-navigation {
     }
     
     .tuning-btn {
-        width: 60px;
+        width: 100%;
+        max-width: 60px;
         height: 48px;
-        font-size: 10px;
-        padding: 6px 8px;
+        font-size: 8.5px;
+        letter-spacing: 0;
+        padding: 6px 2px;
+    }
+
+    .grid-cell.afinacao {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+}
+
+@media (max-width: 370px) {
+    .tab-btn {
+        padding: 14px 2px;
+        font-size: 9px;
+        letter-spacing: 0.3px;
     }
 }

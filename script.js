@@ -358,6 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupOrganistSelectorButton();
     setupOrganistSelector();
     setupPushTestButton();
+    syncHeaderHeight();
     updateCurrentDate();
     showScheduleYear(scheduleYear);
     updateHighlights();
@@ -408,6 +409,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('✅ App carregado com botão de seleção no header!');
 });
+
+// O conteúdo começa logo abaixo do header, que muda de altura conforme a tela e a fonte do celular
+function syncHeaderHeight() {
+    const header = document.querySelector('.header');
+    if (!header) return;
+    const apply = () => document.documentElement.style.setProperty('--header-h', `${header.offsetHeight}px`);
+    apply();
+    if ('ResizeObserver' in window) new ResizeObserver(apply).observe(header);
+}
 
 function setupTabNavigation() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -464,7 +474,14 @@ function centerHorizontally(el, behavior = 'auto') {
     const nameColumn = container.querySelector('.grid-header')?.offsetWidth || 0;
     const offset = el.getBoundingClientRect().left - container.getBoundingClientRect().left + container.scrollLeft;
     const visibleWidth = container.clientWidth - nameColumn;
-    container.scrollTo({ left: offset - nameColumn - (visibleWidth - el.offsetWidth) / 2, behavior });
+    let left = offset - nameColumn - (visibleWidth - el.offsetWidth) / 2;
+
+    // Arredonda para o começo de um mês (mesma "trava" da rolagem com o dedo)
+    const headers = container.querySelectorAll('.grid-header');
+    const monthStep = headers.length > 2 ? headers[2].getBoundingClientRect().left - headers[1].getBoundingClientRect().left : 0;
+    if (monthStep > 0) left = Math.round(left / monthStep) * monthStep;
+
+    container.scrollTo({ left, behavior });
 }
 
 // Centraliza el na vertical, na área visível entre o header e a navegação inferior
@@ -578,6 +595,14 @@ function createHeader(grid) {
     });
 }
 
+// Rótulo pequeno do mês no topo de cada caixa
+function createMonthLabel(month) {
+    const label = document.createElement('div');
+    label.className = 'cell-month';
+    label.textContent = month;
+    return label;
+}
+
 function buildAfinacaoGrid(gridId) {
     const grid = document.getElementById(gridId);
     grid.innerHTML = '';
@@ -592,6 +617,7 @@ function buildAfinacaoGrid(gridId) {
     scheduleData.months.forEach(month => {
         const cell = document.createElement('div');
         cell.className = 'grid-cell afinacao';
+        cell.appendChild(createMonthLabel(month));
         
         const tuningInfo = scheduleData.tuning[month];
         if (tuningInfo) {
@@ -628,6 +654,7 @@ function buildOficialGrid(gridId) {
         scheduleData.months.forEach(month => {
             const cell = document.createElement('div');
             cell.className = `grid-cell ${organist.toLowerCase()}`;
+            cell.appendChild(createMonthLabel(month));
             
             const container = document.createElement('div');
             container.className = 'schedule-items-container';
@@ -666,6 +693,7 @@ function buildMeiaHoraGrid(gridId) {
         scheduleData.months.forEach(month => {
             const cell = document.createElement('div');
             cell.className = `grid-cell ${organist.toLowerCase()}`;
+            cell.appendChild(createMonthLabel(month));
             
             const container = document.createElement('div');
             container.className = 'schedule-items-container';
@@ -704,6 +732,7 @@ function buildJovensGrid(gridId) {
         scheduleData.months.forEach(month => {
             const cell = document.createElement('div');
             cell.className = `grid-cell ${organist.toLowerCase()}`;
+            cell.appendChild(createMonthLabel(month));
             
             const container = document.createElement('div');
             container.className = 'schedule-items-container';
