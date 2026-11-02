@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Cinzel:wght@600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=5.8.0">
+    <link rel="stylesheet" href="style.css?v=5.9.0">
     <title>Rodízio Organistas</title>
 </head>
 <body>
@@ -194,8 +194,8 @@
         </button>
     </div>
 
-    <script src="schedule.js?v=5.8.0"></script>
-    <script src="script.js?v=5.8.0"></script>
+    <script src="schedule.js?v=5.9.0"></script>
+    <script src="script.js?v=5.9.0"></script>
     
     <!-- Service Worker Registration -->
     <script>
@@ -275,11 +275,20 @@
         document.head.appendChild(style);
 
         // Detectar quando o app pode ser instalado
+        // Aberto pelo ícone do app instalado (e não numa aba do navegador)
+        function isRunningInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches ||
+                window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+                window.navigator.standalone === true;
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('📱 App pode ser instalado!');
             e.preventDefault();
+            // Já está dentro do app instalado: não oferece instalar de novo
+            if (isRunningInstalled() || installButton) return;
+            console.log('📱 App pode ser instalado!');
             deferredPrompt = e;
-            
+
             // Criar e mostrar botão
             const button = createInstallButton();
             button.style.display = 'block';
@@ -329,9 +338,8 @@
         // Para iOS - mostrar instruções manuais se necessário
         function showIOSInstructions() {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
-            
-            if (isIOS && !isInStandaloneMode) {
+
+            if (isIOS && !isRunningInstalled()) {
                 setTimeout(() => {
                     showNotification('📱 iOS: Toque em Compartilhar → Adicionar à Tela Inicial');
                 }, 5000);

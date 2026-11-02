@@ -457,12 +457,14 @@ function isToday(el) {
     return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();
 }
 
-// Centraliza el na horizontal dentro da sua tabela
+// Centraliza el na horizontal dentro da sua tabela, na área à direita da coluna fixa dos nomes
 function centerHorizontally(el, behavior = 'auto') {
     const container = el.closest('.table-container');
     if (!container) return;
+    const nameColumn = container.querySelector('.grid-header')?.offsetWidth || 0;
     const offset = el.getBoundingClientRect().left - container.getBoundingClientRect().left + container.scrollLeft;
-    container.scrollTo({ left: offset - (container.clientWidth - el.offsetWidth) / 2, behavior });
+    const visibleWidth = container.clientWidth - nameColumn;
+    container.scrollTo({ left: offset - nameColumn - (visibleWidth - el.offsetWidth) / 2, behavior });
 }
 
 // Centraliza el na vertical, na área visível entre o header e a navegação inferior

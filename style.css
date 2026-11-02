@@ -499,6 +499,9 @@ body.dark-mode .divider {
     display: grid;
     gap: 1px;
     background: var(--border-color);
+    /* Largura real das colunas (não só a da tela): sem isso a coluna fixa dos nomes
+       some junto quando a tabela rola para a direita */
+    width: min-content;
     min-width: 100%;
 }
 
@@ -561,6 +564,15 @@ body.dark-mode .grid-header {
 
 body.dark-mode .organist-name {
     color: #d4af37;
+}
+
+/* Coluna dos nomes fixa: ao rolar os meses para a direita, os nomes continuam visíveis */
+.schedule-grid > .organist-name,
+.schedule-grid > .grid-header:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    box-shadow: 4px 0 6px -4px rgba(0, 0, 0, 0.25);
 }
 
 /* Bordas coloridas por organista - Light Mode */
