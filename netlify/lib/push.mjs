@@ -11,6 +11,24 @@ const TEST_COOLDOWN_MS = 30 * 1000;
 
 const subscriptionId = endpoint => createHash('sha256').update(endpoint).digest('hex');
 
+// Só aceita inscrições dos serviços de push reais (Chrome/Android, Apple, Firefox, Edge)
+const PUSH_SERVICE_HOSTS = [
+    /(^|\.)fcm\.googleapis\.com$/,
+    /(^|\.)android\.googleapis\.com$/,
+    /(^|\.)push\.apple\.com$/,
+    /(^|\.)push\.services\.mozilla\.com$/,
+    /(^|\.)notify\.windows\.com$/
+];
+
+function isPushServiceEndpoint(endpoint) {
+    try {
+        const url = new URL(endpoint);
+        return url.protocol === 'https:' && PUSH_SERVICE_HOSTS.some(re => re.test(url.hostname));
+    } catch (e) {
+        return false;
+    }
+}
+
 // Função de envio configurada com as chaves VAPID do Netlify (null se faltarem)
 export function createPushSender(env = process.env) {
     const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT, URL } = env;
@@ -54,7 +72,7 @@ export async function handleSubscribe(req, store, publicKey) {
     }
 
     const subscription = body && body.subscription;
-    if (!subscription || !/^https:\/\//.test(subscription.endpoint || '') ||
+    if (!subscription || !isPushServiceEndpoint(subscription.endpoint) ||
         !subscription.keys || !subscription.keys.p256dh || !subscription.keys.auth) {
         return json(400, { error: 'Inscrição inválida' });
     }

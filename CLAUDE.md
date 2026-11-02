@@ -38,7 +38,7 @@ Escala e regras dos lembretes ficam em [schedule.js](schedule.js), carregado ant
 
 ## Deploy
 
-Deploy automático via Netlify ao fazer push na branch `main`. A configuração em [netlify.toml](netlify.toml) define os headers de cache e Content-Type para `sw.js` e `manifest.json`.
+O site `organistas-guarani` (https://organistas-guarani.netlify.app) **não está ligado ao GitHub**: `git push` só guarda o código. Publicar = `npx netlify-cli deploy --prod --dir . --functions netlify/functions` (pasta já linkada em `.netlify/`, sempre com permissão do usuário). A configuração em [netlify.toml](netlify.toml) define os headers de cache e Content-Type para `sw.js` e `manifest.json`.
 
 ## Service Worker e cache
 
