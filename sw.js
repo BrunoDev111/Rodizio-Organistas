@@ -1,10 +1,10 @@
-const CACHE_NAME = 'rodizio-organistas-v5.10.0';
+const CACHE_NAME = 'rodizio-organistas-v5.11.0';
 const urlsToCache = [
   './',
   './index.html',
-  './style.css?v=5.10.0',
-  './schedule.js?v=5.10.0',
-  './script.js?v=5.10.0',
+  './style.css?v=5.11.0',
+  './schedule.js?v=5.11.0',
+  './script.js?v=5.11.0',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',

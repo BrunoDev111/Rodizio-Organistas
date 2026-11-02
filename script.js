@@ -260,6 +260,14 @@ function setupOrganistSelectorButton() {
     });
 }
 
+// Com organista escolhida, o botão mostra o nome dela (tocar abre o seletor para trocar)
+function updateSelectorButtonLabel() {
+    const selectorButton = document.getElementById('organistSelectorButton');
+    if (!selectorButton || selectorOpen) return;
+    selectorButton.textContent = selectedOrganist ? `🎹 ${selectedOrganist} ▾` : '🎹 Selecionar Organista';
+    selectorButton.title = selectedOrganist ? 'Toque para trocar a organista' : '';
+}
+
 function openSelector() {
     const selector = document.getElementById('organistSelector');
     const selectorButton = document.getElementById('organistSelectorButton');
@@ -282,9 +290,9 @@ function closeSelector() {
     
     selector.classList.add('hide');
     selector.classList.remove('show');
-    selectorButton.textContent = '🎹 Selecionar Organista';
     selectorButton.classList.remove('open');
     selectorOpen = false;
+    updateSelectorButtonLabel();
     
     setTimeout(() => {
         if (!selectorOpen) {
@@ -378,6 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
             option.classList.add('selected');
             option.querySelector('input[type="radio"]').checked = true;
             selectedOrganist = saved;
+            updateSelectorButtonLabel();
             // Sem gesto do usuário o navegador bloqueia o pedido de permissão: só lê o estado atual
             const statusElement = document.getElementById('notificationStatus');
             if (notificationPermission) {
